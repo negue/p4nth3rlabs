@@ -1,5 +1,5 @@
 import { ChatMessageEvent } from './components/chat/types';
-import { AlertQueueEvent } from './components/alerts/types';
+import { AlertQueueEvent, AllAlerts } from './components/alerts/types';
 export interface SocketOptions {
   reconnect: boolean;
 }
@@ -13,7 +13,13 @@ export enum MainframeEvent {
   teammemberjoin = 'teammember',
   chatmessage = 'chatmessage',
   follow = 'follow',
+  alert_complete = 'alert_complete',
+
+  addChatMessage = 'addChatMessage'
 }
+
+// TODO split / cleanup WebSocket and App Events / Payload Types
+
 export interface ChatWebsocketEvent {
   broadcaster: string;
   event: MainframeEvent;
@@ -21,12 +27,34 @@ export interface ChatWebsocketEvent {
   data: ChatMessageEvent;
 }
 
+// Usually each Action would be typed with its own type
+// but here each type has the same data type so we'll just use a union type here
+// ALL except addChatMessage for now
+export type AlertEventTypes = Exclude<MainframeEvent, MainframeEvent.addChatMessage>;
+
+
 export interface AlertWebsocketEvent {
   broadcaster: string;
   event: MainframeEvent;
   id: string;
   data: AlertQueueEvent;
 }
+
+export interface AppAction {
+  type: MainframeEvent;
+}
+
+export interface ChatMessageAction extends AppAction {
+  type: MainframeEvent.addChatMessage;
+  data: ChatMessageEvent;
+}
+
+export interface AlertAction extends AppAction {
+  type: AlertEventTypes;
+  data: AllAlerts
+}
+
+export type AllActions = ChatMessageAction | AlertAction;
 
 // eslint-disable-next-line no-unused-vars
 export type Callback = (data: any) => void;

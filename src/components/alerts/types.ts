@@ -6,9 +6,8 @@ export enum AlertNames {
 }
 
 export interface AlertQueueEvent {
-  type: string;
+  type: AlertNames;
   id: string;
-  data: { [key: string]: any };
 }
 
 export interface RaidAlert extends AlertQueueEvent {
@@ -38,7 +37,7 @@ export interface CheerAlert extends AlertQueueEvent {
   };
 }
 
-export interface SubAlert {
+export interface SubAlert extends AlertQueueEvent {
   type: AlertNames.Sub;
   data: {
     logoUrl: string;
@@ -48,3 +47,5 @@ export interface SubAlert {
     months: number;
   };
 }
+
+export type AllAlerts = RaidAlert | FollowAlert | CheerAlert | SubAlert;

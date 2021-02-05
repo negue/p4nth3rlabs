@@ -9,6 +9,7 @@ import Overlay from './components/overlay';
 import Webcam from './components/webcam';
 import { GlobalStyle } from './styles';
 import { MainframeEvent, ChatWebsocketEvent, AlertWebsocketEvent } from './types';
+import { AlertNames } from './components/alerts/types';
 
 interface AppProps {
   uri: string | undefined;
@@ -16,6 +17,13 @@ interface AppProps {
 
 function App(props: AppProps) {
   const { uri } = props;
+
+  const initialState: AppState = {
+    chatMessages: [],
+    alerts: [],
+  };
+
+  const [state, dispatch] = useReducer(AppReducer, initialState);
 
   useEffect(() => {
     let socket: any;
@@ -26,60 +34,54 @@ function App(props: AppProps) {
 
       socket.on(MainframeEvent.chatmessage, (event: ChatWebsocketEvent) => {
         dispatch({
-          type: 'addChatMessage',
+          type: MainframeEvent.addChatMessage,
           data: event.data,
         });
       });
 
       socket.on(MainframeEvent.raid, (event: AlertWebsocketEvent) => {
-        const dataToPass: any = {
-          type: MainframeEvent.raid,
-          id: event.id,
-          data: event.data,
-        };
-
         dispatch({
           type: MainframeEvent.raid,
-          data: dataToPass,
+          data: {
+            type: AlertNames.Raid,
+            id: event.id,
+            data: event.data as any, 
+            // ^ those are currently the only places we need to trust the server
+            // TODO maybe add type guards on future refactorings
+          }
         });
       });
 
       socket.on(MainframeEvent.sub, (event: AlertWebsocketEvent) => {
-        const dataToPass: any = {
-          type: MainframeEvent.sub,
-          id: event.id,
-          data: event.data,
-        };
-
         dispatch({
           type: MainframeEvent.sub,
-          data: dataToPass,
+          data: {
+            type: AlertNames.Sub,
+            id: event.id,
+            data: event.data as any,
+          },
         });
       });
 
       socket.on(MainframeEvent.cheer, (event: AlertWebsocketEvent) => {
-        const dataToPass: any = {
-          type: MainframeEvent.cheer,
-          id: event.id,
-          data: event.data,
-        };
-
         dispatch({
           type: MainframeEvent.cheer,
-          data: dataToPass,
+          data: {
+            type: AlertNames.Cheer,
+            id: event.id,
+            data: event.data as any,
+          }
         });
       });
 
       socket.on(MainframeEvent.follow, (event: AlertWebsocketEvent) => {
-        const dataToPass: any = {
-          type: MainframeEvent.follow,
-          id: event.id,
-          data: event.data,
-        };
-
         dispatch({
           type: MainframeEvent.follow,
-          data: dataToPass,
+          data: {  
+            type: AlertNames.Follow,  // now that actions are typed, this has also the right type ;)
+            id: event.id,
+            data: event.data as any,
+          },
         });
       });
     }
@@ -90,13 +92,6 @@ function App(props: AppProps) {
       }
     };
   }, [uri]);
-
-  const initialState: AppState = {
-    chatMessages: [],
-    alerts: [],
-  };
-
-  const [state, dispatch] = useReducer(AppReducer, initialState);
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>

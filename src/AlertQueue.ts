@@ -1,10 +1,10 @@
 import { Dispatch, useContext, useEffect, useState } from 'react';
 import AppContext from './AppContext';
-import { AlertQueueEvent } from './components/alerts/types';
+import { AllAlerts } from './components/alerts/types';
 
-export function useAlertQueue(dispatch: Dispatch<any>): AlertQueueEvent | null {
+export function useAlertQueue(dispatch: Dispatch<any>): AllAlerts | null {
   const ctx = useContext(AppContext);
-  const [currentAlert, setCurrentAlert] = useState<AlertQueueEvent | null>(null);
+  const [currentAlert, setCurrentAlert] = useState<AllAlerts | null>(null);
 
   useEffect(() => {
     if (ctx.state.alerts.length === 0) setCurrentAlert(null);

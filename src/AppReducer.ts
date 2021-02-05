@@ -1,25 +1,16 @@
 import type { AppState } from './AppContext';
-import type { ChatMessageEvent } from './components/chat/types';
-import type { AlertQueueEvent } from './components/alerts/types';
 import { MaxMessageCount } from './components/chat';
-import { MainframeEvent } from './types';
+import { AllActions, MainframeEvent } from './types';
 import { getTeamMemberIconUrl } from './components/chat/message/utils';
 
-interface AppAction {
-  type: string;
-  data: AlertQueueEvent | ChatMessageEvent;
-}
-
-export default function AppReducer(state: AppState, action: AppAction) {
+export default function AppReducer(state: AppState, action: AllActions) {
   const newState = { ...state };
 
   switch (action.type) {
-    case 'addChatMessage':
-      (action.data as ChatMessageEvent).teamMemberIconUrl = getTeamMemberIconUrl(
-        (action.data as ChatMessageEvent).isTeamMember,
-      );
+    case MainframeEvent.addChatMessage:
+      action.data.teamMemberIconUrl = getTeamMemberIconUrl(action.data.isTeamMember);
 
-      newState.chatMessages.push(action.data as ChatMessageEvent);
+      newState.chatMessages.push(action.data);
 
       if (newState.chatMessages.length > MaxMessageCount) {
         newState.chatMessages.shift();
@@ -30,10 +21,10 @@ export default function AppReducer(state: AppState, action: AppAction) {
     case MainframeEvent.raid:
     case MainframeEvent.cheer:
     case MainframeEvent.sub:
-      if (!newState.alerts.some((alert) => alert.data.id === action.data.id)) {
-        newState.alerts.push(action.data as AlertQueueEvent);
+      if (!newState.alerts.some((alert) => alert.id === action.data.id)) {
+        newState.alerts.push(action.data);
       }
-      return { ...newState };
+      return { ...newState }; // << negue: this will be refactored / improved
     case 'alert_complete':
       newState.alerts.shift();
       return { ...newState };

@@ -9,17 +9,18 @@ import {
 } from './index.style';
 import BannerImage from './svg/bannerImage';
 import BannerTextPath from './svg/bannerTextPath';
-import { AlertNames } from './types';
+import { AlertNames, AlertQueueEvent, AllAlerts } from './types';
 import { useAlertQueue } from '../../AlertQueue';
-import { debugAlert } from './debug';
+import { debugCheerAlert } from './debug';
 
 interface AlertProps {
   dispatch: Dispatch<any>;
 }
 
-function getBannerText(alert: any): any {
+function getBannerText(alert: AllAlerts): any {
   switch (alert.type) {
     case AlertNames.Follow:
+      
       return {
         banner: 'New follower',
         footer: alert.data.followerName,
@@ -81,9 +82,12 @@ function getAlertAudioUrl(type: string) {
 export default function Alert(props: AlertProps) {
   const debug = false;
   let alert = useAlertQueue(props.dispatch);
-  if (debug) alert = debugAlert;
+  if (debug){
+    alert = debugCheerAlert;
+  }
+
   if (!alert) return null;
-  const displayText = debug ? getBannerText(debugAlert) : getBannerText(alert);
+  const displayText = getBannerText(alert);
   const alertAudioUrl = getAlertAudioUrl(alert.type);
 
   return (
