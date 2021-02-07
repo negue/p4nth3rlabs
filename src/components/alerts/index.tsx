@@ -9,7 +9,7 @@ import {
 } from './index.style';
 import BannerImage from './svg/bannerImage';
 import BannerTextPath from './svg/bannerTextPath';
-import { AlertNames, AlertQueueEvent, AllAlerts } from './types';
+import { AlertNames, AllAlerts } from './types';
 import { useAlertQueue } from '../../AlertQueue';
 import { debugCheerAlert } from './debug';
 
