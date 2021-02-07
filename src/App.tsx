@@ -15,13 +15,13 @@ interface AppProps {
   uri: string | undefined;
 }
 
+const initialState: AppState = {
+  chatMessages: [],
+  alerts: [],
+};
+
 function App(props: AppProps) {
   const { uri } = props;
-
-  const initialState: AppState = {
-    chatMessages: [],
-    alerts: [],
-  };
 
   const [state, dispatch] = useReducer(AppReducer, initialState);
 
